@@ -3,6 +3,7 @@ package me.GuitarXpress.BetterMagic;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -76,6 +77,7 @@ public class Main extends JavaPlugin {
 //		this.saveDefaultConfig();
 		this.saveConfig();
 		System.out.println("[§9BetterMagic§r] §2Enabled!");
+		Bukkit.broadcastMessage("[§9BetterMagic§r] §eThis plugin is in development and your data may be reset multiple times during this stage.");
 	}
 
 	@Override

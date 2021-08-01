@@ -200,12 +200,23 @@ public class ItemManager {
 		pages.add("§9§lBetterMagic Guide Book\n\n§r§lQuick Start\n\n"
 				+ "§rTo start your adventure you'll need to find one of each elemental shard: §6Fire§r, §2Earth§r, §7Air §rand §3Water§r. "
 				+ "These can be found when mining ores.\n");
-		pages.add("With your newly obtained shards head to the §5Altar §rto craft a §dCrystal of Balance§r.\n"
-				+ "These crystals will be used in most crafting recipes.\n"
-				+ "When you have 4 crystals head to the §6Wizard §rand trade them in for your combat spellbook! §4Note that you can only adquire one, so don't lose it!§r\n\n");
+		pages.add("If you ever want to stop receiving shard drops use §6/magic toggle§r.\n\n"
+				+ "With your newly obtained shards head to the §5Altar §r(/warp altar) to craft a §dCrystal of Balance§r.\n\n"
+				+ "These crystals will be used in most crafting recipes.");
+		pages.add("When you have 4 crystals head to the §6Wizard §rand trade them in for your combat spellbook!\n\n"
+				+ "§rThis spellbook will contain all the available spells for you to use.\n\n"
+				+ "§4Note that you can only adquire one, so don't lose it!§r\n\n");
+		pages.add("§lSpellbook Guide\n\n"
+				+ "§rThere are 3 spellbooks in total but only one is available to use at the moment: the §cCombat Spellbook§r.\n\n"
+				+ "It's very simple to use. §6Sneak + Right Click §rto open it and select a spell.");
+		pages.add("Once the spell has been selected you can cast it with §6Left Click§r.\n\n"
+				+ "§6Right Click §rwill push surrounding mobs away from you.");
 		pages.add("§lLevelling Up & Other Spells§r\n\n"
 				+ "To unlock other spells you need to level up your magic skill, and you can do so just by using it!\n"
 				+ "Using spells will increase your magic skill and using higher level spells will yield more xp.\n");
+		pages.add("§lFinal Notes\n\n"
+				+ "§rThis plugin is under development so if you find any bugs or have any feedback please contact §4GuitarXpress §ron discord.\n\n"
+				+ "§9§lHave Fun!");
 		meta.setPages(pages);
 		item.setItemMeta(meta);
 		helpBook = item;
