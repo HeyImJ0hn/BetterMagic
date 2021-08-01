@@ -1,12 +1,11 @@
 Variables:
-   shardDropChance: 0.1
+   shardDropChance: 0.05
 
 Blocks:
    Altar:
       Locations:
 
-data:
-   spellbooks:
+Booleans:
    
 PlayerLevels:
  

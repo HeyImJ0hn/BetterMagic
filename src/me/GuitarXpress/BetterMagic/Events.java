@@ -42,14 +42,17 @@ public class Events implements Listener {
 	Main plugin;
 
 	private boolean joinedWithinRestart = false;
-	
+
 	public static HashMap<String, SkillManager> skillManagerHashMap = new HashMap<String, SkillManager>();
+
+	public static HashMap<String, Boolean> gotFirstShard = new HashMap<String, Boolean>();
+	public static HashMap<String, Boolean> canGetShards = new HashMap<String, Boolean>();
 
 	public static HashMap<String, Boolean> utilityUnlocked = new HashMap<String, Boolean>();
 	public static HashMap<String, Boolean> ancientUnlocked = new HashMap<String, Boolean>();
 
 	public static List<Location> altarLocations = new ArrayList<Location>();
-	
+
 	public static double shardDropChance;
 
 	Map<Snowball, Integer> snowballPartTaskIDs = new HashMap<Snowball, Integer>();
@@ -112,24 +115,26 @@ public class Events implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player p = event.getPlayer();
-		
+
 		if (!plugin.UUIDs.contains(p.getUniqueId().toString())) {
 			plugin.UUIDs.add(p.getUniqueId().toString());
 			skillManagerHashMap.put(p.getUniqueId().toString(), new SkillManager(1, 7));
 			utilityUnlocked.put(p.getUniqueId().toString(), false);
 			ancientUnlocked.put(p.getUniqueId().toString(), false);
+			gotFirstShard.put(p.getUniqueId().toString(), false);
+			canGetShards.put(p.getUniqueId().toString(), true);
 			System.out.println("=============================================================");
 			System.out.println("[§9BetterMagic§r] §eAdded " + p.getName() + " to BetterMagic data.");
 			System.out.println("UUID: " + p.getUniqueId().toString());
 			System.out.println("Level: 1\nXP: 7");
 			System.out.println("=============================================================");
 		}
-		
+
 		SpellbookManager.createSpellbookPage1(p);
 		SpellbookManager.createSpellbookPage2(p);
 		SpellbookManager.createUtilitySpellbook(p);
 		SpellbookManager.createAncientSpellbook(p);
-		
+
 		if (!joinedWithinRestart) {
 			skillManagerHashMap.get(p.getUniqueId().toString()).restoreSpellbook(p);
 			joinedWithinRestart = true;
@@ -918,7 +923,8 @@ public class Events implements Listener {
 				if (event.getItemInHand().getItemMeta().hasLore()) {
 					if (event.getItemInHand().getItemMeta().getLore().get(0).equals("§7Used for Altar Crafting")) {
 						altarLocations.add(event.getBlockPlaced().getLocation());
-					} else if (event.getItemInHand().getItemMeta().getLore().get(0).equals("§7A powerful Magical Orb.")) {
+					} else if (event.getItemInHand().getItemMeta().getLore().get(0)
+							.equals("§7A powerful Magical Orb.")) {
 						event.setCancelled(true);
 					}
 				}
@@ -951,29 +957,52 @@ public class Events implements Listener {
 				if (p.getInventory().getItemInMainHand().getItemMeta().hasEnchant(Enchantment.SILK_TOUCH))
 					return;
 
-			if (event.getBlock().getType().equals(Material.COAL_ORE)
-					|| event.getBlock().getType().equals(Material.COPPER_ORE)
-					|| event.getBlock().getType().equals(Material.IRON_ORE)
-					|| event.getBlock().getType().equals(Material.GOLD_ORE)
-					|| event.getBlock().getType().equals(Material.REDSTONE_ORE)
-					|| event.getBlock().getType().equals(Material.LAPIS_ORE)
-					|| event.getBlock().getType().equals(Material.DIAMOND_ORE)
-					|| event.getBlock().getType().equals(Material.EMERALD_ORE)) {
-				if (Math.random() < shardDropChance) {
-					event.getBlock().getLocation().getWorld().dropItemNaturally(loc, ItemManager.airShard);
-					return;
-				}
-				if (Math.random() < shardDropChance) {
-					event.getBlock().getLocation().getWorld().dropItemNaturally(loc, ItemManager.waterShard);
-					return;
-				}
-				if (Math.random() < shardDropChance) {
-					event.getBlock().getLocation().getWorld().dropItemNaturally(loc, ItemManager.fireShard);
-					return;
-				}
-				if (Math.random() < shardDropChance) {
-					event.getBlock().getLocation().getWorld().dropItemNaturally(loc, ItemManager.earthShard);
-					return;
+			if (canGetShards.get(p.getUniqueId().toString())) {
+				if (event.getBlock().getType().equals(Material.COAL_ORE)
+						|| event.getBlock().getType().equals(Material.COPPER_ORE)
+						|| event.getBlock().getType().equals(Material.IRON_ORE)
+						|| event.getBlock().getType().equals(Material.GOLD_ORE)
+						|| event.getBlock().getType().equals(Material.REDSTONE_ORE)
+						|| event.getBlock().getType().equals(Material.LAPIS_ORE)
+						|| event.getBlock().getType().equals(Material.DIAMOND_ORE)
+						|| event.getBlock().getType().equals(Material.EMERALD_ORE)) {
+
+					if (Math.random() < shardDropChance) {
+						if (!gotFirstShard.get(p.getUniqueId().toString())) {
+							p.sendMessage(
+									"§eYou find a strange shard.\nType §6/magic toggle §eif you'd like to stop receiving shards.");
+							gotFirstShard.put(p.getUniqueId().toString(), true);
+						}
+						event.getBlock().getLocation().getWorld().dropItemNaturally(loc, ItemManager.airShard);
+						return;
+					}
+					if (Math.random() < shardDropChance) {
+						if (!gotFirstShard.get(p.getUniqueId().toString())) {
+							p.sendMessage(
+									"§eYou find a strange shard.\nType §6/magic toggle §eif you'd like to stop receiving shards.");
+							gotFirstShard.put(p.getUniqueId().toString(), true);
+						}
+						event.getBlock().getLocation().getWorld().dropItemNaturally(loc, ItemManager.waterShard);
+						return;
+					}
+					if (Math.random() < shardDropChance) {
+						if (!gotFirstShard.get(p.getUniqueId().toString())) {
+							p.sendMessage(
+									"§eYou find a strange shard.\nType §6/magic toggle §eif you'd like to stop receiving shards.");
+							gotFirstShard.put(p.getUniqueId().toString(), true);
+						}
+						event.getBlock().getLocation().getWorld().dropItemNaturally(loc, ItemManager.fireShard);
+						return;
+					}
+					if (Math.random() < shardDropChance) {
+						if (!gotFirstShard.get(p.getUniqueId().toString())) {
+							p.sendMessage(
+									"§eYou find a strange shard.\nType §6/magic toggle §eif you'd like to stop receiving shards.");
+							gotFirstShard.put(p.getUniqueId().toString(), true);
+						}
+						event.getBlock().getLocation().getWorld().dropItemNaturally(loc, ItemManager.earthShard);
+						return;
+					}
 				}
 			}
 		}

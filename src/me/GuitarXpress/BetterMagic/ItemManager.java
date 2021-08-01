@@ -10,6 +10,7 @@ import org.bukkit.craftbukkit.libs.org.apache.commons.codec.binary.Base64;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -25,14 +26,17 @@ public class ItemManager {
 	public static ItemStack lockedSpell;
 	public static ItemStack nextPageItem;
 	public static ItemStack prevPageItem;
-	
+
+	// Help Book
+	public static ItemStack helpBook;
+
 	// Unknown
 	public static ItemStack unknownItem;
-	
+
 	// Trades
 	public static ItemStack balanceCrystalTrade;
-	
-	//Altar
+
+	// Altar
 	public static ItemStack altarItem;
 
 	// Spellbook Items
@@ -40,7 +44,7 @@ public class ItemManager {
 	public static ItemStack utilitySpellbookItem;
 	public static ItemStack ancientSpellbookItem;
 	public static ItemStack selectSpellbookItem;
-	
+
 	// Tomes & Books
 	public static ItemStack bookOfBalance;
 	public static ItemStack bookOfTheAncients;
@@ -72,7 +76,7 @@ public class ItemManager {
 	public static ItemStack underwaterBreathing;
 	public static ItemStack fireRes;
 	public static ItemStack jump;
-	
+
 	// Ancient Spells
 	public static ItemStack iceSurge;
 	public static ItemStack poisonSurge;
@@ -88,7 +92,7 @@ public class ItemManager {
 
 	// Crystal
 	public static ItemStack balanceCrystal;
-	
+
 	// Orb
 	public static ItemStack ancientOrb;
 
@@ -119,12 +123,14 @@ public class ItemManager {
 		createLockedSpell();
 		createNextPageItem();
 		createPreviousPageItem();
-		
+
+		createHelpBook();
+
 		createUnknownItem();
-		
+
 		// Trades
 		createBalanceCrystalTrade();
-		
+
 		createAltarItem();
 
 		// Spellbook Items
@@ -132,7 +138,7 @@ public class ItemManager {
 		createUtilitySpellbookItem();
 		createAncientSpellbookItem();
 		createSelectSpellbookItem();
-		
+
 		// Tomes & Books
 		createBookOfBalance();
 		createBookOfTheAncients();
@@ -154,7 +160,7 @@ public class ItemManager {
 		createWaterSurge();
 		createEarthSurge();
 		createFireSurge();
-		
+
 		// UtilitySpells
 		createRegen();
 		createStrength();
@@ -164,13 +170,13 @@ public class ItemManager {
 		createUnderwaterBreathing();
 		createFireRes();
 		createJump();
-		
+
 		// Ancient Spells
 		createIceSurge();
 		createPoisonSurge();
 		createDarkSurge();
 		createBloodSurge();
-		
+
 		// Shards
 		createAirShard();
 		createWaterShard();
@@ -180,9 +186,29 @@ public class ItemManager {
 
 		// Crystal
 		createBalanceCrystal();
-		
+
 		// Orb
 		createAncientOrb();
+	}
+
+	private static void createHelpBook() {
+		ItemStack item = new ItemStack(Material.WRITTEN_BOOK, 1);
+		BookMeta meta = (BookMeta) item.getItemMeta();
+		meta.setTitle("§5BetterMagic Guide");
+		meta.setAuthor("GuitarXpress");
+		ArrayList<String> pages = new ArrayList<>();
+		pages.add("§9§lBetterMagic Guide Book\n\n§r§lQuick Start\n\n"
+				+ "§rTo start your adventure you'll need to find one of each elemental shard: §6Fire§r, §2Earth§r, §7Air §rand §3Water§r. "
+				+ "These can be found when mining ores.\n");
+		pages.add("With your newly obtained shards head to the §5Altar §rto craft a §dCrystal of Balance§r.\n"
+				+ "These crystals will be used in most crafting recipes.\n"
+				+ "When you have 4 crystals head to the §6Wizard §rand trade them in for your combat spellbook! §4Note that you can only adquire one, so don't lose it!§r\n\n");
+		pages.add("§lLevelling Up & Other Spells§r\n\n"
+				+ "To unlock other spells you need to level up your magic skill, and you can do so just by using it!\n"
+				+ "Using spells will increase your magic skill and using higher level spells will yield more xp.\n");
+		meta.setPages(pages);
+		item.setItemMeta(meta);
+		helpBook = item;
 	}
 
 	private static void createUnknownItem() {
@@ -677,7 +703,7 @@ public class ItemManager {
 		item.setItemMeta(meta);
 		balanceCrystal = item;
 	}
-	
+
 	private static void createBalanceCrystalTrade() {
 		ItemStack item = new ItemStack(Material.COAL, 4);
 		ItemMeta meta = item.getItemMeta();
@@ -803,7 +829,7 @@ public class ItemManager {
 		item.setItemMeta(meta);
 		ancientSpellbook = item;
 	}
-	
+
 	private static void createAncientOrb() {
 		ItemStack item = getSkull(
 				"http://textures.minecraft.net/texture/ff778f72eaca452ee013893e2bc53d8d5b1fca44cfe2703865b054c28a3dd7");

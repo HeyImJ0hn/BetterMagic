@@ -31,6 +31,8 @@ public class Commands implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("help")) {
 				player.sendMessage(prefix() + "§eHelpful Commands: ");
 				player.sendMessage("§6/magic level §e- Displays player's level and xp.");
+				player.sendMessage("§6/magic toggle §e- Toggles shard drops (Default is ON).");
+				player.sendMessage("§6/magic guide §e- Adds §9BetterMagic Guide Book §eto inventory.");
 				if (player.hasPermission("magic.spawn")) {
 					player.sendMessage(prefix() + "§eSpawn Item Commands: ");
 					player.sendMessage("§6/magic spellbook §e- Gives player the combat spellbook.");
@@ -75,6 +77,17 @@ public class Commands implements CommandExecutor {
 
 				}
 			}
+			
+			if (args[0].equalsIgnoreCase("toggle")) {
+				if (Events.canGetShards.get(player.getUniqueId().toString())) {
+					Events.canGetShards.put(player.getUniqueId().toString(), false);
+					player.sendMessage(prefix() + "§eYou will no longer receive shards.");
+				} else {
+					Events.canGetShards.put(player.getUniqueId().toString(), true);
+					player.sendMessage(prefix() + "§eYou will now receive shards.");
+				}
+				return true;
+			}
 
 			if (player.hasPermission("magic.spawn")) {
 				if (args[0].equalsIgnoreCase("spellbook")) {
@@ -85,6 +98,11 @@ public class Commands implements CommandExecutor {
 				if (args[0].equalsIgnoreCase("altar")) {
 					player.getInventory().addItem(ItemManager.altarItem);
 					player.sendMessage(prefix() + "§eAdded §5Altar §eto inventory.");
+					return true;
+				}
+				if (args[0].equalsIgnoreCase("guide")) {
+					player.getInventory().addItem(ItemManager.helpBook);
+					player.sendMessage(prefix() + "§eYou received the §9BetterMagic Quick Guide §eto your inventory.");
 					return true;
 				}
 				if (args[0].equalsIgnoreCase("shards")) {

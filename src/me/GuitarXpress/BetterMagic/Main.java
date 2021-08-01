@@ -24,6 +24,11 @@ public class Main extends JavaPlugin {
 		VillagerTrader.init();
 		getConfig().options().copyDefaults(true);
 
+		if (this.getConfig().get("Variables.shardDropChance") != null) {
+			Events.shardDropChance = this.getConfig().getDouble("Variables.shardDropChance");
+			System.out.println("[§9BetterMagic§r] §aLoaded Variables.");
+		}
+		
 		if (this.getConfig().get("PlayerLevels") != null) {
 			ConfigurationSection cfg = this.getConfig().getConfigurationSection("PlayerLevels");
 			for (String key : cfg.getKeys(false)) {
@@ -36,11 +41,6 @@ public class Main extends JavaPlugin {
 				Events.skillManagerHashMap.put(UUIDs.get(i), new SkillManager(level, xp));
 			}
 			System.out.println("[§9BetterMagic§r] §aLoaded Skill Levels.");
-		}
-		
-		if (this.getConfig().get("Variables.shardDropChance") != null) {
-			Events.shardDropChance = this.getConfig().getDouble("Variables.shardDropChance");
-			System.out.println("[§9BetterMagic§r] §aLoaded Variables.");
 		}
 		
 //		if (this.getConfig().contains("data"))
@@ -62,8 +62,18 @@ public class Main extends JavaPlugin {
 			}
 			System.out.println("[§9BetterMagic§r] §aLoaded Unlockables Status.");
 		}
+		
+		if (this.getConfig().get("Booleans") != null) {
+			for (int i = 0; i < UUIDs.size(); i++) {
+				String UUID = UUIDs.get(i);
+				boolean firstShard = this.getConfig().getBoolean("Booleans." + UUID + ".gotFirstShard");
+				Events.gotFirstShard.put(UUID, firstShard);
+				boolean shard = this.getConfig().getBoolean("Booleans." + UUID + ".canGetShards");
+				Events.canGetShards.put(UUID, shard);
+			}
+		}
 
-		this.saveDefaultConfig();
+//		this.saveDefaultConfig();
 		this.saveConfig();
 		System.out.println("[§9BetterMagic§r] §2Enabled!");
 	}
@@ -101,6 +111,17 @@ public class Main extends JavaPlugin {
 				this.saveConfig();
 			}
 			System.out.println("[§9BetterMagic§r] §aSaved Unlockables Status.");
+		}
+		
+		if (!Events.canGetShards.isEmpty() && !UUIDs.isEmpty()) {
+			for (int i = 0; i < UUIDs.size(); i++) {
+				String UUID = UUIDs.get(i);
+				boolean shards = Events.canGetShards.get(UUID);
+				boolean firstShard = Events.gotFirstShard.get(UUID);
+				this.getConfig().set("Booleans." + UUID + ".gotFirstShard", firstShard);
+				this.getConfig().set("Booleans." + UUID + ".canGetShards", shards);
+				this.saveConfig();
+			}
 		}
 		
 		System.out.println("[§9BetterMagic§r] §4Disabled!");
