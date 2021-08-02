@@ -71,6 +71,12 @@ public class Main extends JavaPlugin {
 				Events.gotFirstShard.put(UUID, firstShard);
 				boolean shard = this.getConfig().getBoolean("Booleans." + UUID + ".canGetShards");
 				Events.canGetShards.put(UUID, shard);
+				boolean boughtSpellbook = this.getConfig().getBoolean("Booleans." + UUID + ".boughtSpellbook");
+				Events.boughtSpellbook.put(UUID, boughtSpellbook);
+				boolean boughtUtilityTome = this.getConfig().getBoolean("Booleans." + UUID + ".boughtUtilityTome");
+				Events.boughtUtilityTome.put(UUID, boughtUtilityTome);
+				boolean boughtAncientTome = this.getConfig().getBoolean("Booleans." + UUID + ".boughtAncientTome");
+				Events.boughtAncientTome.put(UUID, boughtAncientTome);
 			}
 		}
 
@@ -120,8 +126,14 @@ public class Main extends JavaPlugin {
 				String UUID = UUIDs.get(i);
 				boolean shards = Events.canGetShards.get(UUID);
 				boolean firstShard = Events.gotFirstShard.get(UUID);
+				boolean boughtSpellbook = Events.boughtSpellbook.get(UUID);
+				boolean boughtUtilityTome = Events.boughtUtilityTome.get(UUID);
+				boolean boughtAncientTome = Events.boughtAncientTome.get(UUID);
 				this.getConfig().set("Booleans." + UUID + ".gotFirstShard", firstShard);
 				this.getConfig().set("Booleans." + UUID + ".canGetShards", shards);
+				this.getConfig().set("Booleans." + UUID + ".boughtSpellbook", boughtSpellbook);
+				this.getConfig().set("Booleans." + UUID + ".boughtUtilityTome", boughtUtilityTome);
+				this.getConfig().set("Booleans." + UUID + ".boughtAncientTome", boughtAncientTome);
 				this.saveConfig();
 			}
 		}

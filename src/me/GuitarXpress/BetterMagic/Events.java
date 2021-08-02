@@ -29,10 +29,13 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -48,15 +51,22 @@ public class Events implements Listener {
 	public static HashMap<String, Boolean> gotFirstShard = new HashMap<String, Boolean>();
 	public static HashMap<String, Boolean> canGetShards = new HashMap<String, Boolean>();
 
+	public static HashMap<String, Boolean> boughtSpellbook = new HashMap<String, Boolean>();
+	public static HashMap<String, Boolean> boughtUtilityTome = new HashMap<String, Boolean>();
+	public static HashMap<String, Boolean> boughtAncientTome = new HashMap<String, Boolean>();
+
 	public static HashMap<String, Boolean> utilityUnlocked = new HashMap<String, Boolean>();
 	public static HashMap<String, Boolean> ancientUnlocked = new HashMap<String, Boolean>();
 
 	public static List<Location> altarLocations = new ArrayList<Location>();
 
+	public static ArrayList<Player> negateFall = new ArrayList<>();
+
 	public static double shardDropChance;
 
 	Map<Snowball, Integer> snowballPartTaskIDs = new HashMap<Snowball, Integer>();
-	Map<Player, Long> cooldowns = new HashMap<Player, Long>();
+	static Map<Player, Long> cooldowns = new HashMap<Player, Long>();
+	static Map<Player, Long> utilityCooldowns = new HashMap<Player, Long>();
 
 	Map<Player, Boolean> earthBonus = new HashMap<Player, Boolean>();
 
@@ -107,6 +117,8 @@ public class Events implements Listener {
 	int darkSurgeProjID;
 	int bloodSurgeProjID;
 
+	int curseProjID;
+
 	public Events(Main plugin) {
 		this.plugin = plugin;
 	}
@@ -123,6 +135,9 @@ public class Events implements Listener {
 			ancientUnlocked.put(p.getUniqueId().toString(), false);
 			gotFirstShard.put(p.getUniqueId().toString(), false);
 			canGetShards.put(p.getUniqueId().toString(), true);
+			boughtSpellbook.put(p.getUniqueId().toString(), false);
+			boughtUtilityTome.put(p.getUniqueId().toString(), false);
+			boughtAncientTome.put(p.getUniqueId().toString(), false);
 			System.out.println("=============================================================");
 			System.out.println("[§9BetterMagic§r] §eAdded " + p.getName() + " to BetterMagic data.");
 			System.out.println("UUID: " + p.getUniqueId().toString());
@@ -189,10 +204,9 @@ public class Events implements Listener {
 
 				if (cooldowns.containsKey(p)) {
 					if (cooldowns.get(p) > System.currentTimeMillis()) {
-//					long timeleft = (cooldowns.get(p) - System.currentTimeMillis()) / 1000;
+//						long timeleft = (cooldowns.get(p) - System.currentTimeMillis()) / 1000;
 						return;
 					}
-
 				}
 				cooldowns.put(p, System.currentTimeMillis() + (1 * 1100));
 				p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 5.0f, 100.0f);
@@ -250,6 +264,18 @@ public class Events implements Listener {
 		}
 		// ============ Left Click ============
 		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+			
+			if (event.getItem().getItemMeta().getLore().get(0).equals("§7A magical spellbook with Utility spells.")) {
+				if (!event.getItem().getItemMeta().getLore().get(event.getItem().getItemMeta().getLore().size()-1).contains("Leap of Faith")) {
+					if (utilityCooldowns.containsKey(p)) {
+						if (utilityCooldowns.get(p) > System.currentTimeMillis()) {
+							long timeleft = (utilityCooldowns.get(p) - System.currentTimeMillis()) / 1000;
+							p.sendMessage("§cYou need to wait §6" + timeleft + " §cmore seconds to cast this spell again!");
+							return;
+						}
+					}
+				}
+			}
 			for (int i = 0; i < event.getItem().getItemMeta().getLore().size(); i++) {
 				// ===== Air Bolt =====
 				if (event.getItem().getItemMeta().getLore().get(i).contains("Air Bolt")) {
@@ -680,8 +706,88 @@ public class Events implements Listener {
 						p.getWorld().playSound(p.getLocation(), Sound.BLOCK_NETHER_WART_BREAK, 100.0f, 1.0f);
 						cooldowns.put(p, System.currentTimeMillis() + 1 * 1100);
 					}
+					// ==== Band-Aid ====
+				} else if (event.getItem().getItemMeta().getLore().get(i).contains("Band-Aid")) {
+					if (!utilityCooldowns.containsKey(p) || System.currentTimeMillis() >= utilityCooldowns.get(p)) {
+						p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 10 * 20, 2, true));
+						p.getWorld().playSound(p.getLocation(), Sound.BLOCK_NETHER_WART_BREAK, 100.0f, 1.0f);
+						utilityCooldowns.put(p, System.currentTimeMillis() + 60 * 1000);
+					}
+					// ==== Iron Fist ====
+				} else if (event.getItem().getItemMeta().getLore().get(i).contains("Iron Fist")) {
+					if (!utilityCooldowns.containsKey(p) || System.currentTimeMillis() >= utilityCooldowns.get(p)) {
+						p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 20, 2, true));
+						p.getWorld().playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 100.0f, 1.0f);
+						utilityCooldowns.put(p, System.currentTimeMillis() + 60 * 1000);
+					}
+					// ==== Quick Hands ====
+				} else if (event.getItem().getItemMeta().getLore().get(i).contains("Quick Hands")) {
+					if (!utilityCooldowns.containsKey(p) || System.currentTimeMillis() >= utilityCooldowns.get(p)) {
+						p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 30 * 20, 1, true));
+						p.getWorld().playSound(p.getLocation(), Sound.BLOCK_STONE_BREAK, 100.0f, 1.0f);
+						utilityCooldowns.put(p, System.currentTimeMillis() + 60 * 1000);
+					}
+					// ==== Iron Skin ====
+				} else if (event.getItem().getItemMeta().getLore().get(i).contains("Iron Skin")) {
+					if (!utilityCooldowns.containsKey(p) || System.currentTimeMillis() >= utilityCooldowns.get(p)) {
+						p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 20, 3, true));
+						p.getWorld().playSound(p.getLocation(), Sound.BLOCK_ANVIL_USE, 100.0f, 1.0f);
+						utilityCooldowns.put(p, System.currentTimeMillis() + 60 * 1000);
+					}
+					// ==== Curse ====
+				} else if (event.getItem().getItemMeta().getLore().get(i).contains("Curse")) {
+					if (!utilityCooldowns.containsKey(p) || System.currentTimeMillis() >= utilityCooldowns.get(p)) {
+						Snowball proj = (Snowball) p.getWorld().spawnEntity(p.getLocation().clone().add(0, 1.4, 0),
+								EntityType.SNOWBALL);
+						proj.setVelocity(p.getLocation().getDirection().normalize().multiply(4.2));
+						curseProjID = proj.getEntityId();
+						proj.setShooter(p);
+						int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+							if (proj.isValid()) {
+								p.getWorld().spawnParticle(Particle.REDSTONE, proj.getLocation().clone(), 100, 0.1, 0.1,
+										0.1, 1, dustBlack);
+								p.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, proj.getLocation().clone(), 10,
+										0, 0, 0, 1);
+							} else {
+								Bukkit.getScheduler().cancelTask(this.snowballPartTaskIDs.get(proj));
+								this.snowballPartTaskIDs.remove(proj);
+							}
+						}, 2, 1);
+						this.snowballPartTaskIDs.put(proj, taskID);
+						proj.setItem(new ItemStack(Material.FLINT));
+						p.getWorld().playSound(p.getLocation(), Sound.ENTITY_WITHER_SHOOT, 100.0f, 1.0f);
+						utilityCooldowns.put(p, System.currentTimeMillis() + 60 * 1000);
+					}
+					// ==== Help from the Depths ====
+				} else if (event.getItem().getItemMeta().getLore().get(i).contains("Help from the Depths")) {
+					if (!utilityCooldowns.containsKey(p) || System.currentTimeMillis() >= utilityCooldowns.get(p)) {
+						p.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 40 * 20, 10, true));
+						p.addPotionEffect(new PotionEffect(PotionEffectType.CONDUIT_POWER, 40 * 20, 10, true));
+						p.addPotionEffect(new PotionEffect(PotionEffectType.DOLPHINS_GRACE, 40 * 20, 10, true));
+						p.getWorld().playSound(p.getLocation(), Sound.AMBIENT_UNDERWATER_ENTER, 100.0f, 1.0f);
+						utilityCooldowns.put(p, System.currentTimeMillis() + 60 * 1000);
+					}
+					// ==== Magma Skin ====
+				} else if (event.getItem().getItemMeta().getLore().get(i).contains("Magma Skin")) {
+					if (!utilityCooldowns.containsKey(p) || System.currentTimeMillis() >= utilityCooldowns.get(p)) {
+						p.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 40 * 20, 10, true));
+						p.getWorld().playSound(p.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 100.0f, 1.0f);
+						utilityCooldowns.put(p, System.currentTimeMillis() + 60 * 1000);
+					}
+					// ==== Leap of Faith ====
+				} else if (event.getItem().getItemMeta().getLore().get(i).contains("Leap of Faith")) {
+					if (!cooldowns.containsKey(p) || System.currentTimeMillis() >= cooldowns.get(p)) {
+						p.setVelocity(p.getLocation().getDirection().add(new Vector(0, .5, 0)));
+						p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 5.0f, 100.0f);
+						p.getWorld().spawnParticle(Particle.REDSTONE, p.getLocation().clone(), 30, 1, 1, 1, 1,
+								dustWhite);
+						if (negateFall.contains(p)) {
+						} else {
+							negateFall.add(p);
+						}
+						cooldowns.put(p, System.currentTimeMillis() + 1 * 1500);
+					}
 				}
-
 			}
 		}
 
@@ -716,6 +822,31 @@ public class Events implements Listener {
 				}
 			}
 
+		}
+	}
+
+	// ========================= EntityDamageEvent =========================
+	@EventHandler
+	public void onFall(EntityDamageEvent event) {
+		if (event.getEntity() instanceof Player) {
+			Player player = (Player) event.getEntity();
+			if (negateFall.contains(player)) {
+				if (event.getCause() == DamageCause.FALL) {
+					negateFall.remove(player);
+					event.setCancelled(true);
+				}
+			}
+		}
+	}
+
+	// ========================= PlayerMoveEvent =========================
+	@EventHandler
+	public void playerMove(PlayerMoveEvent event) {
+		if (negateFall.contains(event.getPlayer())) {
+			if (event.getPlayer().getLocation().getBlock().getType().equals(Material.WATER)
+					|| event.getPlayer().getLocation().getBlock().getType().equals(Material.LAVA)) {
+				negateFall.remove(event.getPlayer());
+			}
 		}
 	}
 
@@ -911,6 +1042,16 @@ public class Events implements Listener {
 					Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 100.0f, 1.0f);
 			event.getEntity().getWorld().spawnParticle(Particle.REDSTONE,
 					event.getEntity().getLocation().clone().add(0, 1, 0), 120, 0.5, 0.5, 0.5, 1, dustRed);
+		}
+
+		// =========== UTILITY ===========
+		if (event.getDamager() instanceof Snowball && event.getDamager().getEntityId() == curseProjID) { // CURSE
+			LivingEntity le = (LivingEntity) event.getEntity();
+			le.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * 20, 0));
+			event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST,
+					100.0f, 1.0f);
+			event.getEntity().getWorld().spawnParticle(Particle.REDSTONE,
+					event.getEntity().getLocation().clone().add(0, 1, 0), 120, 0.5, 0.5, 0.5, 1, dustBlack);
 		}
 
 	}

@@ -321,19 +321,21 @@ public class SpellbookManager implements Listener {
 			spellbookPage2.put(key, content);
 		});
 
-		plugin.getConfig().getConfigurationSection("data." + UUID + ".utilitySpellbooks").getKeys(false).forEach(key -> {
-			@SuppressWarnings("unchecked")
-			ItemStack[] content = ((List<ItemStack>) plugin.getConfig().get("data." + UUID + ".utilitySpellbooks." + key))
-					.toArray(new ItemStack[0]);
-			utilitySpellbooks.put(key, content);
-		});
+		plugin.getConfig().getConfigurationSection("data." + UUID + ".utilitySpellbooks").getKeys(false)
+				.forEach(key -> {
+					@SuppressWarnings("unchecked")
+					ItemStack[] content = ((List<ItemStack>) plugin.getConfig()
+							.get("data." + UUID + ".utilitySpellbooks." + key)).toArray(new ItemStack[0]);
+					utilitySpellbooks.put(key, content);
+				});
 
-		plugin.getConfig().getConfigurationSection("data." + UUID + ".ancientSpellbooks").getKeys(false).forEach(key -> {
-			@SuppressWarnings("unchecked")
-			ItemStack[] content = ((List<ItemStack>) plugin.getConfig().get("data." + UUID + ".ancientSpellbooks." + key))
-					.toArray(new ItemStack[0]);
-			ancientSpellbooks.put(key, content);
-		});
+		plugin.getConfig().getConfigurationSection("data." + UUID + ".ancientSpellbooks").getKeys(false)
+				.forEach(key -> {
+					@SuppressWarnings("unchecked")
+					ItemStack[] content = ((List<ItemStack>) plugin.getConfig()
+							.get("data." + UUID + ".ancientSpellbooks." + key)).toArray(new ItemStack[0]);
+					ancientSpellbooks.put(key, content);
+				});
 
 		System.out.println("[§9BetterMagic§r] §aRestored Spellbooks.");
 	}
@@ -518,6 +520,66 @@ public class SpellbookManager implements Listener {
 									lore.set(3, "§7Current Spell: §4Blood Surge");
 							}
 
+							meta.setLore(lore);
+							item.setItemMeta(meta);
+							p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 100.0f);
+							return;
+						} else if (inv.getItem(i).getItemMeta().getLore().get(0)
+								.equals("§7A magical spellbook with Utility spells.")) {
+							ItemStack item = inv.getItem(i);
+							ItemMeta meta = item.getItemMeta();
+							List<String> lore = item.getItemMeta().getLore();
+							if (lore.size() == 2)
+								lore.add(" ");
+							// Utility
+							if (spell.equals("bandaid")) {
+								if (lore.size() <= 3)
+									lore.add(3, "§7Current Spell: §dBand-Aid");
+								else
+									lore.set(3, "§7Current Spell: §dBand-Aid");
+							}
+							if (spell.equals("ironfist")) {
+								if (lore.size() <= 3)
+									lore.add(3, "§7Current Spell: §fIron Fist");
+								else
+									lore.set(3, "§7Current Spell: §fIron Fist");
+							}
+							if (spell.equals("quickhands")) {
+								if (lore.size() <= 3)
+									lore.add(3, "§7Current Spell: §eQuick Hands");
+								else
+									lore.set(3, "§7Current Spell: §eQuick Hands");
+							}
+							if (spell.equals("ironskin")) {
+								if (lore.size() <= 3)
+									lore.add(3, "§7Current Spell: §fIron Skin");
+								else
+									lore.set(3, "§7Current Spell: §fIron Skin");
+							}
+							if (spell.equals("curse")) {
+								if (lore.size() <= 3)
+									lore.add(3, "§7Current Spell: §8Curse");
+								else
+									lore.set(3, "§7Current Spell: §8Curse");
+							}
+							if (spell.equals("underwater")) {
+								if (lore.size() <= 3)
+									lore.add(3, "§7Current Spell: §9Help from the Depths");
+								else
+									lore.set(3, "§7Current Spell: §9Help from the Depths");
+							}
+							if (spell.equals("magmaskin")) {
+								if (lore.size() <= 3)
+									lore.add(3, "§7Current Spell: §6Magma Skin");
+								else
+									lore.set(3, "§7Current Spell: §6Magma Skin");
+							}
+							if (spell.equals("leapoffaith")) {
+								if (lore.size() <= 3)
+									lore.add(3, "§7Current Spell: §fLeap of Faith");
+								else
+									lore.set(3, "§7Current Spell: §fLeap of Faith");
+							}
 							meta.setLore(lore);
 							item.setItemMeta(meta);
 							p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 100.0f);
@@ -722,6 +784,62 @@ public class SpellbookManager implements Listener {
 		if (clickedItem.getItemMeta().equals(ItemManager.bloodSurge.getItemMeta())) {
 			p.sendMessage("§eSpellbook bound to §4Blood Surge§e.");
 			changeSpell(p, "bloodSurge");
+			p.closeInventory();
+			return;
+		}
+		////////////////////////////////// UTILITY SPELLS /////////////////////////////
+		if (clickedItem.getItemMeta().equals(ItemManager.regen.getItemMeta())) {
+			p.sendMessage("§eSpellbook bound to §dBand-Aid§e.");
+			changeSpell(p, "bandaid");
+			p.closeInventory();
+			return;
+		}
+
+		if (clickedItem.getItemMeta().equals(ItemManager.strength.getItemMeta())) {
+			p.sendMessage("§eSpellbook bound to §fIron Fist§e.");
+			changeSpell(p, "ironfist");
+			p.closeInventory();
+			return;
+		}
+		
+		if (clickedItem.getItemMeta().equals(ItemManager.haste.getItemMeta())) {
+			p.sendMessage("§eSpellbook bound to Quick Hands§e.");
+			changeSpell(p, "quickhands");
+			p.closeInventory();
+			return;
+		}
+		
+		if (clickedItem.getItemMeta().equals(ItemManager.defence.getItemMeta())) {
+			p.sendMessage("§eSpellbook bound to §fIron Skin§e.");
+			changeSpell(p, "ironskin");
+			p.closeInventory();
+			return;
+		}
+		
+		if (clickedItem.getItemMeta().equals(ItemManager.weakness.getItemMeta())) {
+			p.sendMessage("§eSpellbook bound to §8Curse§e.");
+			changeSpell(p, "curse");
+			p.closeInventory();
+			return;
+		}
+		
+		if (clickedItem.getItemMeta().equals(ItemManager.underwaterBreathing.getItemMeta())) {
+			p.sendMessage("§eSpellbook bound to §9Help from the Depths§e.");
+			changeSpell(p, "underwater");
+			p.closeInventory();
+			return;
+		}
+		
+		if (clickedItem.getItemMeta().equals(ItemManager.fireRes.getItemMeta())) {
+			p.sendMessage("§eSpellbook bound to §6Magma Skin§e.");
+			changeSpell(p, "magmaskin");
+			p.closeInventory();
+			return;
+		}
+		
+		if (clickedItem.getItemMeta().equals(ItemManager.jump.getItemMeta())) {
+			p.sendMessage("§eSpellbook bound to §fLeap of Faith§e.");
+			changeSpell(p, "leapoffaith");
 			p.closeInventory();
 			return;
 		}

@@ -24,7 +24,11 @@ public class Commands implements CommandExecutor {
 			return true;
 
 		if (args.length == 0) {
-			player.sendMessage(prefix() + "§ePlugin being developed by §4GuitarXpress§e.\n- Version 1.0.0 BETA\nPlease to submit any feedback on discord.\nFor help use §6/magic help§e.");
+			player.sendMessage(prefix() + "§ePlugin being developed by §4GuitarXpress§e."
+					+ "\n- Version 1.0.2 BETA"
+					+ "\nPlease to submit any feedback on discord.\n"
+					+ "\n§cNote that your data (levels and such) may be reset multiple times during development§e"
+					+ "\nFor help use §6/magic help§e.");
 		}
 
 		if (args.length >= 1) {
@@ -41,6 +45,7 @@ public class Commands implements CommandExecutor {
 					player.sendMessage("§6/magic unlocks §e- Gives player items to unlock content (tomes).");
 //					player.sendMessage("§6/magic orb §e- Gives player the ancient orb (WIP).");
 					player.sendMessage("§6/magic unreleased §e- Gives player WIP items.");
+					player.sendMessage("§6/magic resetcooldowns §e- Resets all spell cooldowns.");
 				}
 				if (player.hasPermission("magic.xp")) {
 					player.sendMessage(prefix() + "§eXP Commands: ");
@@ -90,6 +95,12 @@ public class Commands implements CommandExecutor {
 			}
 
 			if (player.hasPermission("magic.spawn")) {
+				if (args[0].equalsIgnoreCase("resetcooldowns")) {
+					Events.cooldowns.put(player, (long) 0);
+					Events.utilityCooldowns.put(player, (long) 0);
+					player.sendMessage(prefix() + "§eReset all spell cooldowns.");
+					return true;
+				}
 				if (args[0].equalsIgnoreCase("spellbook")) {
 					player.getInventory().addItem(ItemManager.spellbook);
 					player.sendMessage(prefix() + "§eAdded Spellbook to inventory.");

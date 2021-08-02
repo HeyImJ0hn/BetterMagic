@@ -1,6 +1,8 @@
 # BetterMagic
 BetterMagic Minecraft Plugin for Spigot/Paper 1.17 by GuitarXpress (HeyImJ0hn)
 
+It's currently under development.
+
 ##### Permission nodes:
 - "magic.spawn" - Permission to spawn plugin related items
 - "magic.xp" - Permission to give and remove xp from players
@@ -20,6 +22,7 @@ BetterMagic Minecraft Plugin for Spigot/Paper 1.17 by GuitarXpress (HeyImJ0hn)
 - /magic shards - Gives player one of each shard.
 - /magic unlocks - Gives player items to unlock content (tomes).
 - /magic unreleased - Gives player WIP items.
+- /magic resetcooldowns - Resets all spell cooldowns.
 
 ###### "magic.xp" Permission Required
 - /magic addxp «xp» «username» - Adds «xp» to specified player.

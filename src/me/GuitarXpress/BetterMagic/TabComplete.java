@@ -23,6 +23,7 @@ public class TabComplete implements TabCompleter {
 				arguments.add("altar");
 				arguments.add("unlocks");
 				arguments.add("unreleased");
+				arguments.add("resetcooldowns");
 			}
 			if (player.hasPermission("magic.xp")) {
 				arguments.add("addxp");
