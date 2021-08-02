@@ -14,7 +14,7 @@ It's currently under development.
 - /magic help - Displays all available commands if player has permissions for them.
 - /magic level - Displays player's level and xp.
 - /magic toggle - Toggles shard drops (Default is ON).
-- /magic guide - Adds §9BetterMagic Guide Book §eto inventory.
+- /magic guide - Adds BetterMagic Guide Book to inventory.
 
 ###### "magic.spawn" Permission Required
 - /magic spellbook - Gives player the combat spellbook.
